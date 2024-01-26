@@ -20,8 +20,12 @@ On Terminal Run the following code snippets
 ```bash
 cd LibraryApp.Api
 ```
+Add Migration
 ```bash
-dotnet ef migrations add Initial -p ../LibraryApp.EntityFrameWorkCore/LibraryApp.EntityFrameWorkCore.csproj
+dotnet ef migrations add LibraryApp -p ../LibraryApp.EntityFrameWorkCore/LibraryApp.EntityFrameWorkCore.csproj
+```
+Update Database
+```bash
 dotnet ef database update -p ../LibraryApp.EntityFrameWorkCore/LibraryApp.EntityFrameWorkCore.csproj
 ```
 
