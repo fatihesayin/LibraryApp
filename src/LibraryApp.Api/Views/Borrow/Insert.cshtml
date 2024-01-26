@@ -1,0 +1,76 @@
+@model SelectList
+
+<!DOCTYPE html>
+<html lang="en">
+
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+<style>
+    .center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 10px;
+    }
+
+    .center-vertical {
+        top: 10%;
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+</style>
+<div class="center">
+    <div class="w3-card-4 w3-animate-zoom" style="width: 400px;">
+        <a class="center-vertical">Kitap Ekle</a>
+        <div class="w3-container" style="padding-top: 64px;">
+            <input id="borrower" class="w3-input w3-border w3-margin-bottom" type="text"
+                placeholder="Ödünç Alanın Adı(Opsiyonel)"></input>
+            <input id="returnDate" class="w3-input w3-border w3-margin-bottom" type="date"
+                placeholder="Geri Getirilecek Tarih(Opsiyonel)"></input>
+            <button id="save" class="w3-button w3-block w3-section w3-padding" type="submit">Kaydet</button>
+        </div>
+    </div>
+</div>
+@*Java scripts*@
+@section scripts {
+    @*External scripts for data table plugins*@
+    <script type="text/javascript">
+        $("#save").click(function () {
+            var borrower = document.getElementById("borrower").value;
+            var returnDate = document.getElementById("returnDate").value;
+            var parameters = getUrlVars();
+            var sendData = {
+                borrower: borrower,
+                returnDate: returnDate,
+                bookId: parameters["bookId"]
+            };
+            $.ajax({
+                url: "@Url.Action("Insert", "Borrow")",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(sendData),
+                success: function (data) {
+                    window.location.href = "@Url.Action("Index", "Book")";
+                },
+                error: function (err) {
+                    alert($.parseJSON(err).errorMessage);
+                }
+            });
+        });
+        function getUrlVars() {
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+        }
+    </script>
+}

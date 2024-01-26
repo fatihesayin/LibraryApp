@@ -1,0 +1,155 @@
+@model SelectList
+
+<!DOCTYPE html>
+<html lang="en">
+
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+<style>
+  /* The container must be positioned relative: */
+  .custom-select {
+    position: relative;
+    font-family: Arial;
+  }
+
+  .custom-select select {
+    display: none;
+    /*hide original SELECT element: */
+  }
+
+  .select-selected {
+    background-color: DodgerBlue;
+  }
+
+  /* Style the arrow inside the select element: */
+  .select-selected:after {
+    position: absolute;
+    content: "";
+    top: 14px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-color: #fff transparent transparent transparent;
+  }
+
+  /* Point the arrow upwards when the select box is open (active): */
+  .select-selected.select-arrow-active:after {
+    border-color: transparent transparent #fff transparent;
+    top: 7px;
+  }
+
+  /* style the items (options), including the selected item: */
+  .select-items div,
+  .select-selected {
+    color: #ffffff;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+    cursor: pointer;
+  }
+
+  /* Style items (options): */
+  .select-items {
+    position: absolute;
+    background-color: DodgerBlue;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 99;
+  }
+
+  /* Hide the items when the select box is closed: */
+  .select-hide {
+    display: none;
+  }
+
+  .select-items div:hover,
+  .same-as-selected {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+  }
+
+  .center-vertical {
+    top: 10%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>
+
+
+<div class="center">
+  <div class="w3-card-4 w3-animate-zoom">
+    <a class="center-vertical">Kitap Ekle</a>
+    <div class="w3-container" style="padding-top: 64px;">
+      <input id="bookName" class="w3-input w3-border w3-margin-bottom" type="text" placeholder="Kitap Adı"></input>
+      <input id="authorName" class="w3-input w3-border w3-margin-bottom" type="text" placeholder="Yazar Adı"></input>
+      <div class="w3-input w3-border w3-margin-bottom">
+        <input id="fileInput" type="file" />
+        <img id="preview" src="#" style="display: none;" width="16px" />
+      </div>
+      <button id="save" class="w3-button w3-block w3-section w3-padding" type="submit">Kaydet</button>
+    </div>
+  </div>
+</div>
+@*Java scripts*@
+@section scripts {
+  @*External scripts for data table plugins*@
+  <script type="text/javascript">
+    $("#save").click(function () {
+      var errorValidation = "";
+      var base64String = document.getElementById("preview").src.split(';base64,')[1];
+      var bookName = document.getElementById("bookName").value;
+      if (bookName === "") {
+        errorValidation += "Kitap ismi zorunludur.";
+      }
+      var authorName = document.getElementById("authorName").value;
+      if (authorName === "") {
+        errorValidation += "Yazar ismi zorunludur.";
+      }
+      if (errorValidation !== "") {
+        alert(errorValidation);
+        return;
+      }
+      var sendData = {
+        name: bookName,
+        image: base64String,
+        authorName: authorName
+      };
+      $.ajax({
+        url: "@Url.Action("Insert", "Book")",
+        type: "POST",
+        dataType: "xml/html/script/json",
+        contentType: "application/json",
+        data: JSON.stringify(sendData),
+        success: function (data) {
+          window.location.href = "@Url.Action("Index", "Book")";
+        },
+        error: function (err) {
+          alert($.parseJSON(err).errorMessage);
+        }
+      });
+    });
+    $("#fileInput").on("change input", function () {
+      if (this) {
+        var preview = document.getElementById('preview');
+        var file = this.files[0];
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function (e) {
+          console.log(e.target.result);
+          preview.src = e.target.result;
+          preview.style.display = "inline";
+        };
+      }
+    });
+  </script>
+}
