@@ -40,7 +40,7 @@ namespace LibraryApp.Manager
             {
                 if(string.IsNullOrWhiteSpace(item.Image))
                 {
-                    item.Image = await _fileManager.GetImage(Path.Combine("/",Directory.GetCurrentDirectory(), "files", "default"));
+                    item.Image = await _fileManager.GetImage(Path.Combine("/",Directory.GetCurrentDirectory(), "files", "default.png"));
                 } else {
                     item.Image = await _fileManager.GetImage(item.Image);
                 }

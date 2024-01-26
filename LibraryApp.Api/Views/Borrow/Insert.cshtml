@@ -58,7 +58,7 @@
                     window.location.href = "@Url.Action("Index", "Book")";
                 },
                 error: function (err) {
-                    alert($.parseJSON(err).errorMessage);
+                    alert(err.responseJSON.errorMessage);
                 }
             });
         });

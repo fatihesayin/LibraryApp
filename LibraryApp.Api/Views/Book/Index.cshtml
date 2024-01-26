@@ -10,7 +10,6 @@
 
     .pagination {
         display: inline-block;
-        text-align: end;
     }
 
     .pagination a {
@@ -74,10 +73,19 @@
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
 
-<b style="text-align: end;">Kitapları / Yazarları Arayın
-    <input id="query" type="text" placeholder="Ara...">
-    <button id="searchButton">Ara</button>
-</b>
+<div>
+    <b style="text-align: end;">Kitapları / Yazarları Arayın
+        <input id="query" type="text" placeholder="Ara...">
+        <button id="searchButton">Ara</button>
+    </b>
+    <a>Gözükecek Kitap Sayısı</a>
+    <select id="pageSize">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+    </select>
+</div>
 <table id="example" class="table table-striped table-bordered">
     <thead>
         <tr>
@@ -102,28 +110,31 @@
         $(document).ready(function () {
             var parameters = getUrlVars();
             $("#searchButton").on("click", function () {
+                var parameters = getUrlVars();
                 var value = $('#query').val().toLowerCase();
+                var pageSize = parameters["pageSize"];
+                if(value.length === 0)
+                {
+                    window.location.href = "@Url.Action("Index", "Book")" + "?currentPage=1&pageSize=" + pageSize;
+                    return;
+                }
                 if (value.length <= 2) {
                     alert("En az 3 karakter girmeniz gerekmektedir.");
                     return;
                 }
-                $.ajax({
-                    url: "@Url.Action("GetPagedList", "Book")",
-                    type: 'GET',
-                    data: { currentPage: parameters["currentPage"], pageSize: parameters["pageSize"], query: value },
-                    dataType: 'json',
-                    success: function (data) {
-                        const datalist = document.getElementById('books');
-                        datalist.innerHTML = '';
-                        fillTable(data.result.books, datalist);
-                    },
-                    error: function(err){
-                        alert($.parseJSON(err).errorMessage);
-                    }
-                });
+                window.location.href = window.location.href + "&query=" + value;
+                getPagedList();
             });
         });
         $(document).ready(function () {
+            var parameters = getUrlVars();
+            if(!parameters["currentPage"] || !parameters["pageSize"])
+            {
+                window.location.href = "@Url.Action("Index", "Book")" + "?currentPage=1&pageSize=10";
+                return;
+            }
+            var pageSize = parameters["pageSize"];
+            $('#pageSize').val(pageSize);
             getPagedList();
         });
         function fillTable(books, datalist) {
@@ -209,15 +220,15 @@
             var pageItemHtml = "";
             var parameters = getUrlVars();
             if (pageCount > 1) {
-                pageItemHtml += "<a href='Index?currentPage=1&pageSize=10'>&laquo;</a>";
+                pageItemHtml += "<a href='Index?currentPage=1&pageSize=" + parameters["pageSize"] + "'>&laquo;</a>";
                 for (i = 1; i <= pageCount; i++) {
                     if (i == parameters["currentPage"]) {
-                        pageItemHtml += "<a href='Index?currentPage=" + i + "&pageSize=10' class='active'>" + i + "</a>"
+                        pageItemHtml += "<a href='Index?currentPage=" + i + "&pageSize=" + parameters["pageSize"] + "' class='active'>" + i + "</a>"
                     } else {
-                        pageItemHtml += "<a href='Index?currentPage=" + i + "&pageSize=10'>" + i + "</a>"
+                        pageItemHtml += "<a href='Index?currentPage=" + i + "&pageSize=" + parameters["pageSize"] + "'>" + i + "</a>"
                     }
                 }
-                pageItemHtml += "<a href='Index?currentPage=" + pageCount + "&pageSize=10'>&raquo;</a>";
+                pageItemHtml += "<a href='Index?currentPage=" + pageCount + "&pageSize=" + parameters["pageSize"] + "'>&raquo;</a>";
             }
             return pageItemHtml;
         }
@@ -226,6 +237,19 @@
         }
         $('#pagination').change(function () {
             getPagedList();
+        });
+        $('#pageSize').change(function() {
+            var pageSize = $('#pageSize').find(":selected").val();
+            var parameters = getUrlVars();
+            var currentPage = parameters["currentPage"];
+            var query = parameters["query"];
+            if(currentPage === "")
+                currentPage = 1;
+            if(query === "" || query === undefined || query === null)
+                window.location.href = "@Url.Action("Index", "Book")" + "?currentPage=" + currentPage + "&pageSize=" + pageSize;
+            else{
+                window.location.href = "@Url.Action("Index", "Book")" + "?currentPage=" + currentPage + "&pageSize=" + pageSize + "&query=" + query;
+            }
         });
         function getPagedList() {
             var parameters = getUrlVars();
@@ -241,7 +265,7 @@
                     pageItem.innerHTML = fillPagination(data.result.pageCount, 1)
                 },
                 error: function(err){
-                    alert($.parseJSON(err).errorMessage);
+                    alert(err.responseJSON.errorMessage);
                 }
             });
         }

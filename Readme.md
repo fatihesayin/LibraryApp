@@ -1,18 +1,24 @@
 # LibraryApp
 
-## Pre Requisites
+## Pre-Requisites
 
+Need to install PostgreSQL Server
 Visual Studio Code (Visual Studio, Rider etc.) with the C# extension installed.
 The .NET 8 SDK needs to be downloaded also.
 
 ## Before Running The Application
 
-Need to install PostgreSQL
-
 ### Determining Database 
 Our Database Managemenent System is PostgreSQL 
 Open LibraryApp.Api
 Open appsettings.json
+    "DefaultConnection": "Host={host:port};Database=LibraryManagement;Username={Username};Password={Password};"
+Replace host:port with your own Database Host And Port (Default is localhost:5432)
+Replace Username as your own Database Username (Default is postgres)
+If you identified password then
+    Replace Password as your own Database Password (Default is postgres)
+Else 
+    Password={Password}; part can be deleted
 
 ### Database Installation
 On Terminal Run the following code snippets
