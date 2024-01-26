@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/LibraryApp.Api/bin/Debug/net8.0/LibraryApp.Api.dll",
+            "program": "${workspaceFolder}/LibraryApp.Api/bin/Debug/net8.0/LibraryApp.Api.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/LibraryApp.Api",
+            "cwd": "${workspaceFolder}/LibraryApp.Api",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",
@@ -21,7 +21,7 @@
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {
-                "/Views": "${workspaceFolder}/src/Views"
+                "/Views": "${workspaceFolder}/Views"
             }
         }
     ]
